@@ -3,6 +3,6 @@ python-dotenv
 pyTelegramBotAPI
 pandas
 psycopg2-binary
-pickle
+pickle5
 beautifulsoup4
 tqdm
