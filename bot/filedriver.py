@@ -15,18 +15,20 @@ class FileDriver:
         if not self.exists:
             open(self.path, 'w').close()
 
-    def open(self):
-        return open(self.path, 'r')
-
     def empty(self):
         return os.stat(self.path).st_size == 0
+    
+    '''
+    def open(self):
+        return open(self.path, 'r')
 
     def write_file(self, text=None):
         file = open(self.path, 'w')
         file.write(text)
 
         return self
-    
+    '''
+
     def make_excel(self, df: pd.DataFrame):
         df.to_excel(self.path)
 

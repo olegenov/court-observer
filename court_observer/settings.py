@@ -82,6 +82,9 @@ WSGI_APPLICATION = 'court_observer.wsgi.application'
 
 DATABASES = {
     'default': {
+        #"ENGINE": "django.db.backends.sqlite3",
+        #"NAME": "mydatabase",
+
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.environ.get('DB_NAME'),
         'USER': os.environ.get('POSTGRES_USER'),

@@ -3,6 +3,8 @@ import telebot as tb
 import pandas as pd
 import os
 
+import time
+
 from django.conf import settings
 
 from bot.error_handler import ErrorHandler
@@ -64,10 +66,10 @@ class Bot:
             file = self.get_file(entity)
             message_text = f'❗️ У отслеживаемого лица "{entity.name}" есть дела'
 
-            if file.empty():
+            if file is None:
                 return
     
-            with file.open() as document:
+            with open(file.path, 'rb') as document:
                 self.send_document(user_tg, message_text, document) 
 
             file.delete()
@@ -90,7 +92,10 @@ class Bot:
         message_text = f'❗️ У отслеживаемого лица "{entity.name}" есть дела'
         file = self.get_file(entity)
 
-        with file.open() as document:
+        if file is None:
+            return
+        
+        with open(file.path, 'rb') as document:
             self.send_document(user_tg, message_text, document)   
 
         file.delete()
@@ -116,6 +121,10 @@ class Bot:
             cases = entity.cases.all()
 
         df = pd.DataFrame([case.as_dict() for case in cases])
+
+        if df.empty:
+            return None
+
         file_driver = FileDriver(entity.name)
         file_driver.make_excel(df)
 
@@ -204,7 +213,10 @@ class Bot:
             message_text = f'❗️ У отслеживаемого лица "{entity.name}" новые дела'
             file = self.get_file(entity, case_objects)
 
-            with file.open() as document:
+            if file is None:
+                continue
+
+            with open(file.path, 'rb') as document:
                 for observation in observations:
                     self.send_document(observation.tg, message_text, document)
 
@@ -264,8 +276,6 @@ class Bot:
                 caption=caption, 
                 document=document
             )
-
-            document.close()
 
             if message is None or not isinstance(message, tb.types.Message):
                 ErrorHandler.handle_ofye(f"Не удалось доставить сообщение {to}")
