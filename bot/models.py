@@ -26,3 +26,6 @@ class Case(models.Model):
         related_name="cases",
     )
     link = models.CharField(verbose_name="Name", max_length=200)
+
+    def as_dict(self):
+        return {'number': self.number, 'link': self.link}
