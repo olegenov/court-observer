@@ -6,3 +6,4 @@ psycopg2-binary
 pickle5
 beautifulsoup4
 tqdm
+lxml
