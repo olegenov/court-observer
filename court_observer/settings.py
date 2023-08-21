@@ -136,6 +136,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CSRF_TRUSTED_ORIGINS = ['http://*',]
 
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
+
+
 # Bot settings
 TOKEN = os.getenv("TOKEN")
 DAILY_TIME = (10, 0)
