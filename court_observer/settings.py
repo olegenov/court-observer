@@ -134,7 +134,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+CSRF_TRUSTED_ORIGINS = ['http://*',]
+
 # Bot settings
 TOKEN = os.getenv("TOKEN")
-DAILY_TIME = (0, 22)
+DAILY_TIME = (10, 0)
 WEBHOOK_URL = 'http://127.0.0.1:8000/bot/webhook/'
