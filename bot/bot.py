@@ -102,6 +102,7 @@ class Bot:
             return None
         
         data = sort_data(parse_result)
+        
         cases = []
         
         for (_, row) in data.iterrows():
@@ -114,6 +115,11 @@ class Bot:
         if cases == None:
             cases = entity.cases.all()
 
+        df = pd.DataFrame([case.as_dict() for case in cases])
+        file_driver = FileDriver(entity.name)
+        file_driver.make_excel(df)
+
+        '''
         file_driver = FileDriver(entity.name)
         text = ""
 
@@ -124,6 +130,7 @@ class Bot:
             text += row_string
 
         file = file_driver.write_file(text)
+        '''
 
         return file_driver
 

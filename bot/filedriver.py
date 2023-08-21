@@ -1,10 +1,11 @@
 import os
 import time
 
+import pandas as pd
 
 class FileDriver:
     def __init__(self, name):
-        self.path = f'./entities/{name}-{round(time.time(), 2)}.txt'
+        self.path = f'./entities/{name}-{round(time.time(), 2)}.xlsx'
         self.exists = os.path.exists(self.path)
 
         if not os.path.exists('./entities/'):
@@ -25,6 +26,11 @@ class FileDriver:
 
         return self
     
+    def make_excel(self, df: pd.DataFrame):
+        df.to_excel(self.path)
+
+        return self
+
     def delete(self):
         os.remove(self.path)
         
