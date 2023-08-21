@@ -7,3 +7,4 @@ pickle5
 beautifulsoup4
 tqdm
 lxml
+openpyxl
