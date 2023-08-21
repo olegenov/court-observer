@@ -4,5 +4,5 @@ pyTelegramBotAPI
 pandas
 psycopg2-binary
 pickle
-BeautifulSoup
+beautifulsoup4
 tqdm
