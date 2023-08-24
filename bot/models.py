@@ -25,7 +25,8 @@ class Case(models.Model):
         on_delete=models.CASCADE,
         related_name="cases",
     )
+    court = models.CharField(max_length=40, verbose_name="Court", null=True, blank=True)
     link = models.CharField(verbose_name="Name", max_length=200)
 
     def as_dict(self):
-        return {'number': self.number, 'link': self.link}
+        return {'entity': self.entity.name, 'court': self.court, 'number': self.number, 'link': self.link}

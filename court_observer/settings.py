@@ -82,8 +82,8 @@ WSGI_APPLICATION = 'court_observer.wsgi.application'
 
 DATABASES = {
     'default': {
-        #"ENGINE": "django.db.backends.sqlite3",
-        #"NAME": "mydatabase",
+        # "ENGINE": "django.db.backends.sqlite3",
+        # "NAME": "mydatabase",
 
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.environ.get('DB_NAME'),
@@ -146,5 +146,5 @@ INTERNAL_IPS = [
 
 # Bot settings
 TOKEN = os.getenv("TOKEN")
-DAILY_TIME = (10, 0)
+DAILY_TIME = (10, 00)
 WEBHOOK_URL = 'http://127.0.0.1:8000/bot/webhook/'

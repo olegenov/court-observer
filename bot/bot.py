@@ -1,15 +1,12 @@
-import asyncio
 import telebot as tb
 import pandas as pd
-import os
-
-import time
 
 from django.conf import settings
 
 from bot.error_handler import ErrorHandler
 from bot.models import Observation, Entity, Case
 from bot.messages import Messages
+from bot.commands import Commands
 from bot.court_parser import get_court_data, sort_data
 from bot.filedriver import FileDriver
 
@@ -47,7 +44,7 @@ class Bot:
         self.instance.register_next_step_handler(mes, self.add_entity)
 
     def add_entity(self, message:tb.types.Message):
-        if message.text == Messages.CANCEL:
+        if message.text == Messages.CANCEL or message.text in Messages.commands:
             return self.start(message)
 
         user_tg = message.from_user.id
@@ -69,8 +66,7 @@ class Bot:
             if file is None:
                 return
     
-            with open(file.path, 'rb') as document:
-                self.send_document(user_tg, message_text, document) 
+            self.send_document(user_tg, message_text, file) 
 
             file.delete()
 
@@ -87,7 +83,12 @@ class Bot:
             return
 
         for case in cases:
-            Case.objects.get_or_create(number=case[0], entity=entity, link=case[1])
+            case_object = Case.objects.get_or_create(number=case[2], entity=entity, link=case[1])[0]
+
+            if case_object.court != case[0]:
+                case_object.court = case[0]
+            
+            case_object.save()
 
         message_text = f'❗️ У отслеживаемого лица "{entity.name}" есть дела'
         file = self.get_file(entity)
@@ -95,8 +96,7 @@ class Bot:
         if file is None:
             return
         
-        with open(file.path, 'rb') as document:
-            self.send_document(user_tg, message_text, document)   
+        self.send_document(user_tg, message_text, file)   
 
         file.delete()
     
@@ -111,7 +111,7 @@ class Bot:
         cases = []
         
         for (_, row) in data.iterrows():
-            case = (row["Номер дела"], row["Ссылка"])
+            case = (row["Суд"], row["Ссылка"], row["Номер дела"])
             cases.append(case)
 
         return cases
@@ -206,8 +206,12 @@ class Bot:
                 continue
 
             for case in cases:
-                if not Case.objects.filter(number=case[0], entity=entity).exists():
-                    case_object = Case.objects.get_or_create(number=case[0], entity=entity, link=case[1])[0]
+                case_object, created = Case.objects.get_or_create(number=case[2], entity=entity, link=case[1])
+
+                if case_object.court != case[0]:
+                    case_object.court = case[0]
+
+                if created:
                     case_objects.append(case_object)
 
             message_text = f'❗️ У отслеживаемого лица "{entity.name}" новые дела'
@@ -216,15 +220,18 @@ class Bot:
             if file is None:
                 continue
 
-            with open(file.path, 'rb') as document:
-                for observation in observations:
-                    self.send_document(observation.tg, message_text, document)
+            for observation in observations:
+                self.send_document(observation.tg, message_text, file)
 
             file.delete()
 
     def list(self, message:tb.types.Message):
         observations = Observation.objects.filter(tg=message.from_user.id)
         entities = [observation.entity.name for observation in observations]
+
+        if len(entities) == 0:
+            return
+
         text = Messages.STALKING + '\n\n📌 ' + '\n📌 '.join(entities)
 
         self.send_message(
@@ -269,13 +276,14 @@ class Bot:
         except:
                 ErrorHandler.handle_ofye(f"Не удалось завершить функцию отправки сообщения {to}")
 
-    def send_document(self, to:int, caption:str, document):
+    def send_document(self, to:int, caption:str, file: FileDriver):
         try:
-            message = self.instance.send_document(
-                to,
-                caption=caption, 
-                document=document
-            )
+            with open(file.path, 'rb') as document:
+                message = self.instance.send_document(
+                    to,
+                    caption=caption, 
+                    document=document
+                )
 
             if message is None or not isinstance(message, tb.types.Message):
                 ErrorHandler.handle_ofye(f"Не удалось доставить сообщение {to}")
