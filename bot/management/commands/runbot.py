@@ -39,7 +39,7 @@ class Command(BaseCommand):
             bot.trash(message)
 
         mailing_thread = th.Thread(target=DailyRunner.run, args=[bot.mailing, []])
-        polling_thread = th.Thread(target=bot.instance.polling)
+        polling_thread = th.Thread(target=bot.instance.polling, args=[True])
         
         polling_thread.start()
         mailing_thread.start()
