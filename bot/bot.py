@@ -291,3 +291,7 @@ class Bot:
             return message
         except:
                 ErrorHandler.handle_ofye(f"Не удалось отправить сообщение {to}")
+
+    def infinite_polling(self):
+        while True:
+            self.instance.polling(non_stop=True)
