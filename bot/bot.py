@@ -294,4 +294,8 @@ class Bot:
 
     def infinite_polling(self):
         while True:
-            self.instance.polling(non_stop=True)
+            try:
+                ErrorHandler.handle_ofye(f"Возообновление polling")
+                self.instance.polling(non_stop=True)
+            except:
+                ErrorHandler.handle_ofye(f"Остановка polling")
