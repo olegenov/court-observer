@@ -226,7 +226,8 @@ class Bot:
 
                 self.send_document(observation.tg, message_text, file)
 
-            file.delete()
+            if file is FileDriver:
+                file.delete()
 
             for tg in not_send:
                 self.send_message(
