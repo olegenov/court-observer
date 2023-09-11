@@ -219,21 +219,21 @@ class Bot:
             message_text = f'❗️ У отслеживаемого лица "{entity.name}" новые дела'
             file = self.get_file(entity, case_objects)
 
-            for observation in observations:
-                if file is None:
-                    not_send.add(observation.tg)
-                    continue
+            if file is None:
+                tgs = observations.values_list('tg')
 
+                for tg in tgs:
+                    self.send_message(
+                        tg[0],
+                        "ℹ️ Сегодня ничего не найдено."
+                    )
+                
+                return
+
+            for observation in observations:
                 self.send_document(observation.tg, message_text, file)
 
-            if file is FileDriver:
-                file.delete()
-
-            for tg in not_send:
-                self.send_message(
-                    tg,
-                    "ℹ️ Сегодня ничего не найдено."
-                )
+            file.delete()
 
     def list(self, message:tb.types.Message):
         observations = Observation.objects.filter(tg=message.from_user.id)
