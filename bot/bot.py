@@ -226,7 +226,7 @@ class Bot:
                 self.send_document(observation.tg, message_text, file)
 
                 try:
-                    not_send.remove(observation.tg)
+                    not_send.remove((observation.tg))
                 except KeyError:
                     continue
 
