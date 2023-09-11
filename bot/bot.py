@@ -197,7 +197,7 @@ class Bot:
             return
         
         not_send = set(Observation.objects.all().values_list('tg'))
-
+        print(not_send)
         for entity in entities:
             observations = entity.observations.all()
 
@@ -226,12 +226,12 @@ class Bot:
                 self.send_document(observation.tg, message_text, file)
 
                 try:
-                    not_send.remove((observation.tg))
+                    not_send.remove((observation.tg,))
                 except KeyError:
                     continue
-
+            
             file.delete()
-
+        print(not_send)
         for tg in not_send:
             self.send_message(tg[0], "ℹ️ Сегодня ничего не найдено.")
 
