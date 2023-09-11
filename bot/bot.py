@@ -196,6 +196,8 @@ class Bot:
         if not entities:
             return
         
+        not_send = set()
+
         for entity in entities:
             observations = entity.observations.all()
 
@@ -217,13 +219,20 @@ class Bot:
             message_text = f'❗️ У отслеживаемого лица "{entity.name}" новые дела'
             file = self.get_file(entity, case_objects)
 
-            if file is None:
-                continue
-
             for observation in observations:
+                if file is None:
+                    not_send.add(observation.tg)
+                    continue
+
                 self.send_document(observation.tg, message_text, file)
 
             file.delete()
+
+            for tg in not_send:
+                self.send_message(
+                    tg,
+                    "ℹ️ Сегодня ничего не найдено."
+                )
 
     def list(self, message:tb.types.Message):
         observations = Observation.objects.filter(tg=message.from_user.id)
