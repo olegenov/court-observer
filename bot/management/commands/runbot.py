@@ -38,7 +38,7 @@ class Command(BaseCommand):
         def handle_trash(message):
             bot.trash(message)
 
-        mailing_thread = th.Thread(target=DailyRunner.run, args=[bot.mailing, []])
+        mailing_thread = th.Thread(target=DailyRunner.infinite_run, args=[bot.mailing, []])
         polling_thread = th.Thread(target=bot.infinite_polling)
         
         polling_thread.start()

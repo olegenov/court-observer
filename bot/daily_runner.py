@@ -1,10 +1,20 @@
 import time
 import datetime
 
+from bot.error_handler import ErrorHandler
 from django.conf import settings
 from .models import Entity, Observation
 
+
 class DailyRunner:
+    def infinite_run(func, args):
+        while True:
+            try:
+                ErrorHandler.handle_ofye(f"Возообновление DailyRunner")
+                DailyRunner.run(func, args)
+            except:
+                ErrorHandler.handle_ofye(f"Остановка DailyRunner")
+
     def run(func, args):
         while True:
             current_datetime = datetime.datetime.now()
